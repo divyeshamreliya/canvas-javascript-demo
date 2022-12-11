@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Prep App</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- Styles -->
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+        }
+
+        <style>* {
+            box-sizing: border-box;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul li {
+            border: 1px solid #ddd;
+            margin-top: -1px;
+            /* Prevent double borders */
+            /*background-color: #f6f6f6;*/
+            padding: 12px;
+            text-decoration: none;
+            font-size: 18px;
+            color: black;
+            display: block;
+            position: relative;
+        }
+
+        ul li:hover {
+            background-color: #eee;
+        }
+
+        .close {
+            position: absolute;
+            top: 50%;
+            right: 0%;
+            /*padding: 12px 16px;*/
+            border: 1px solid;
+            margin-right: 25px;
+            transform: translate(0%, -50%);
+        }
+
+        .close:hover {
+            background: #bbb;
+            cursor: url('images/pencil-cursor.png'), default !important;
+        }
+    </style>
+    </style>
+</head>
+
+<body>
+    <h2>Question Papers</h2>
+    <p>Count the items.</p>
+
+    <ul>
+        <li><img src="images/count-flowers.png" />
+            <span class="close">
+                <canvas id="first-img-canvas" width="100" height="75"></canvas>
+            </span>
+        </li>
+        <li><img src="images/count-ball.png" />
+            <span class="close">
+                <canvas id="second-img-canvas" width="100" height="75"></canvas>
+            </span>
+        </li>
+        <li><img src="images/count-moneky.png" />
+            <span class="close">
+                <canvas id="third-img-canvas" width="100" height="75"></canvas>
+            </span>
+        </li>
+    </ul>
+    <script>
+        if (window.addEventListener) {
+            window.addEventListener('load', function() {
+                let canvas,context, tool;
+                let second_canvas,second_context, second_tool;
+
+                function init(element) {
+                    // Find the canvas element.
+                    canvas = document.getElementById(element);
+                    if (!canvas) {
+                        alert('Error: I cannot find the canvas element!');
+                        return;
+                    }
+
+                    if (!canvas.getContext) {
+                        alert('Error: no canvas.getContext!');
+                        return;
+                    }
+
+                    // Get the 2D canvas context.
+                    context = canvas.getContext('2d');
+                    if (!context) {
+                        alert('Error: failed to getContext!');
+                        return;
+                    }
+                    //console.log("context : ", context);
+                    // Pencil tool instance.
+                    tool = new tool_pencil();
+                    //console.log("tool : ", tool)
+                    // Attach the mousedown, mousemove and mouseup event listeners.
+                    canvas.addEventListener('mousedown', ev_canvas, false);
+                    canvas.addEventListener('mousemove', ev_canvas, false);
+                    canvas.addEventListener('mouseup', ev_canvas, false);
+                }
+
+                function initSecond(element) {
+                    // Find the canvas element.
+                    second_canvas = document.getElementById("second-img-canvas");
+                    if (!second_canvas) {
+                        alert('Error: I cannot find the canvas element!');
+                        return;
+                    }
+
+                    if (!second_canvas.getContext) {
+                        alert('Error: no canvas.getContext!');
+                        return;
+                    }
+
+                    // Get the 2D canvas context.
+                    second_context = second_canvas.getContext('2d');
+                    if (!second_context) {
+                        alert('Error: failed to getContext!');
+                        return;
+                    }
+                    //console.log("second_context : ", second_context);
+                    // Pencil tool instance.
+                    second_tool = new tool_pencil_second();
+                    //console.log("second_tool : ", second_tool)
+                    // Attach the mousedown, mousemove and mouseup event listeners.
+                    second_canvas.addEventListener('mousedown', ev_canvas_second, false);
+                    second_canvas.addEventListener('mousemove', ev_canvas_second, false);
+                    second_canvas.addEventListener('mouseup', ev_canvas_second, false);
+                }
+
+                // This painting tool works like a drawing pencil which tracks the mouse
+                // movements.
+                function tool_pencil() {
+                    tool = this;
+                    this.started = false;
+                    // This is called when you start holding down the mouse button.
+                    // This starts the pencil drawing.
+                    this.mousedown = function(ev) {
+                        context.beginPath();
+                        context.moveTo(ev._x, ev._y);
+                        tool.started = true;
+                    };
+
+                    // This function is called every time you move the mouse. Obviously, it only
+                    // draws if the tool.started state is set to true (when you are holding down
+                    // the mouse button).
+                    this.mousemove = function(ev) {
+                        if (tool.started) {
+                            context.lineTo(ev._x, ev._y);
+                            context.stroke();
+                        }
+                    };
+
+                    // This is called when you release the mouse button.
+                    this.mouseup = function(ev) {
+                        if (tool.started) {
+                            tool.mousemove(ev);
+                            tool.started = false;
+                        }
+                    };
+                }
+
+                function tool_pencil_second() {
+                    second_tool = this;
+                    second_tool.started = false;
+                    // This is called when you start holding down the mouse button.
+                    // This starts the pencil drawing.
+                    this.mousedown = function(ev) {
+                        second_context.beginPath();
+                        second_context.moveTo(ev._x, ev._y);
+                        second_tool.started = true;
+                    };
+
+                    // This function is called every time you move the mouse. Obviously, it only
+                    // draws if the tool.started state is set to true (when you are holding down
+                    // the mouse button).
+                    this.mousemove = function(ev) {
+                        if (second_tool.started) {
+                            second_context.lineTo(ev._x, ev._y);
+                            second_context.stroke();
+                        }
+                    };
+
+                    // This is called when you release the mouse button.
+                    this.mouseup = function(ev) {
+                        if (second_tool.started) {
+                            second_tool.mousemove(ev);
+                            second_tool.started = false;
+                        }
+                    };
+                }
+                // The general-purpose event handler. This function just determines the mouse
+                // position relative to the canvas element.
+                function ev_canvas(ev) {
+                    if (ev.layerX || ev.layerX == 0) { // Firefox
+                        ev._x = ev.layerX;
+                        ev._y = ev.layerY;
+                    } else if (ev.offsetX || ev.offsetX == 0) { // Opera
+                        ev._x = ev.offsetX;
+                        ev._y = ev.offsetY;
+                    }
+
+                    // Call the event handler of the tool.
+                    var func = tool[ev.type];
+                    if (func) {
+                        func(ev);
+                    }
+                }
+
+                function ev_canvas_second(ev) {
+                    if (ev.layerX || ev.layerX == 0) { // Firefox
+                        ev._x = ev.layerX;
+                        ev._y = ev.layerY;
+                    } else if (ev.offsetX || ev.offsetX == 0) { // Opera
+                        ev._x = ev.offsetX;
+                        ev._y = ev.offsetY;
+                    }
+
+                    // Call the event handler of the tool.
+                    var func = second_tool[ev.type];
+                    if (func) {
+                        func(ev);
+                    }
+                }
+
+                init('first-img-canvas');
+                initSecond('second-img-canvas');
+
+            }, false);
+        }
+    </script>
+</body>
+
+</html>
